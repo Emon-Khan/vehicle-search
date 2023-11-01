@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class ManufacturerServiceImpl implements ManufacturerService {
     @Autowired
     private ManufacturerDAO manufacturerDAO;
+
     @Override
     public Manufacturer saveManufacturer(Manufacturer manufacturer) {
         return manufacturerDAO.save(manufacturer);
@@ -26,10 +28,25 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
     @Override
     public Manufacturer getManufacturerById(int id) {
-        Optional<Manufacturer> manufacturerFromDbUsingId= manufacturerDAO.findById(id);
-        if(manufacturerFromDbUsingId.isPresent()){
+        Optional<Manufacturer> manufacturerFromDbUsingId = manufacturerDAO.findById(id);
+        if (manufacturerFromDbUsingId.isPresent()) {
             return manufacturerFromDbUsingId.get();
         }
         return null;
+    }
+
+    @Override
+    public Manufacturer updateManufacturer(int id, Manufacturer updatedManufacturer) {
+        Manufacturer manufacturerBasedOnId = getManufacturerById(id);
+        if (manufacturerBasedOnId != null && Objects.nonNull(updatedManufacturer)) {
+            if (!"".equalsIgnoreCase(updatedManufacturer.getManufacturerName())) {
+                manufacturerBasedOnId.setManufacturerName(updatedManufacturer.getManufacturerName());
+            }
+            if(!"".equalsIgnoreCase(updatedManufacturer.getCountryOfOrigin())){
+                manufacturerBasedOnId.setCountryOfOrigin((updatedManufacturer.getCountryOfOrigin()));
+            }
+            return manufacturerDAO.save(manufacturerBasedOnId);
+        }
+        return manufacturerBasedOnId;
     }
 }
