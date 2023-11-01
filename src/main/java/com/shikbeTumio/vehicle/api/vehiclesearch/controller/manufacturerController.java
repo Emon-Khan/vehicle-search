@@ -1,6 +1,7 @@
 package com.shikbeTumio.vehicle.api.vehiclesearch.controller;
 
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Manufacturer;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ManufacturerNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.ManufacturerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,8 +26,11 @@ public class manufacturerController {
         return ResponseEntity.status(HttpStatus.OK).body(allManufacturers);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Manufacturer> getManufacturerBasedOnId(@PathVariable int id){
+    public ResponseEntity<Manufacturer> getManufacturerBasedOnId(@PathVariable int id) throws ManufacturerNotFoundException {
        Manufacturer manufacturerResultUsingId = manufacturerService.getManufacturerById(id);
+       if(manufacturerResultUsingId==null){
+           throw new ManufacturerNotFoundException("No manufacturer found for ID- "+id);
+       }
        return ResponseEntity.ok(manufacturerResultUsingId);
     }
 }
