@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ManufacturerServiceImpl implements ManufacturerService {
@@ -21,5 +22,14 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     public List<Manufacturer> fetchAllManufacturers() {
         List<Manufacturer> allManufacturer = manufacturerDAO.findAll();
         return allManufacturer;
+    }
+
+    @Override
+    public Manufacturer getManufacturerById(int id) {
+        Optional<Manufacturer> manufacturerFromDbUsingId= manufacturerDAO.findById(id);
+        if(manufacturerFromDbUsingId.isPresent()){
+            return manufacturerFromDbUsingId.get();
+        }
+        return null;
     }
 }
