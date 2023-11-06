@@ -2,6 +2,7 @@ package com.shikbeTumio.vehicle.api.vehiclesearch.service.impl;
 
 import com.shikbeTumio.vehicle.api.vehiclesearch.dao.ManufacturerDAO;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Manufacturer;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ManufacturerNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.ManufacturerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,11 +43,20 @@ public class ManufacturerServiceImpl implements ManufacturerService {
             if (!"".equalsIgnoreCase(updatedManufacturer.getManufacturerName())) {
                 manufacturerBasedOnId.setManufacturerName(updatedManufacturer.getManufacturerName());
             }
-            if(!"".equalsIgnoreCase(updatedManufacturer.getCountryOfOrigin())){
+            if (!"".equalsIgnoreCase(updatedManufacturer.getCountryOfOrigin())) {
                 manufacturerBasedOnId.setCountryOfOrigin((updatedManufacturer.getCountryOfOrigin()));
             }
             return manufacturerDAO.save(manufacturerBasedOnId);
         }
         return manufacturerBasedOnId;
+    }
+
+    @Override
+    public void deleteManufacturerByID(int id) throws ManufacturerNotFoundException{
+        Manufacturer manufacturerBasedOnID = getManufacturerById(id);
+        if (manufacturerBasedOnID == null) {
+            throw new ManufacturerNotFoundException("Manufacturer not found for ID- "+id);
+        }
+        manufacturerDAO.deleteById(id);
     }
 }
