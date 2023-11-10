@@ -8,6 +8,8 @@ import com.shikbeTumio.vehicle.api.vehiclesearch.service.ModelTrimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ModelTrimServiceImpl implements ModelTrimService {
     @Autowired
@@ -24,5 +26,11 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     @Override
     public TrimType saveTrimType(TrimType trimType) {
         return trimTypeDAO.save(trimType);
+    }
+
+    @Override
+    public List<Model> getAllModels() {
+        List<Model> saveModels = modelDAO.findAll();
+        return saveModels;
     }
 }
