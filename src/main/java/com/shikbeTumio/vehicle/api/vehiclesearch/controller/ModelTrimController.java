@@ -2,6 +2,8 @@ package com.shikbeTumio.vehicle.api.vehiclesearch.controller;
 
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Model;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.TrimType;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ModelNotFoundException;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.TrimTypeNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.ModelTrimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,5 +38,17 @@ public class ModelTrimController {
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Model> updateModel(@PathVariable int id, @RequestBody Model model) throws ModelNotFoundException {
+        Model updatedModel = modelTrimService.modifyModel(id, model);
+        return new ResponseEntity<>(updatedModel, HttpStatus.OK);
+    }
+
+    @PutMapping("/trim-type/{id}")
+    public ResponseEntity<TrimType> updateTrimType(@PathVariable int id, @RequestBody TrimType trimType) throws TrimTypeNotFoundException {
+        TrimType updatedTrimType = modelTrimService.modifyTrimType(id, trimType);
+        return new ResponseEntity<>(updatedTrimType, HttpStatus.OK);
     }
 }
