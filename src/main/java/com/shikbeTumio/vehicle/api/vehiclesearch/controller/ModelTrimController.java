@@ -51,4 +51,9 @@ public class ModelTrimController {
         TrimType updatedTrimType = modelTrimService.modifyTrimType(id, trimType);
         return new ResponseEntity<>(updatedTrimType, HttpStatus.OK);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteModel(@PathVariable int id) throws ModelNotFoundException {
+        modelTrimService.deleteModelById(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Deleted model of ID "+id);
+    }
 }
