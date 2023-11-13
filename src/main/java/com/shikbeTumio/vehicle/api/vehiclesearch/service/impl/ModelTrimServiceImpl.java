@@ -9,12 +9,14 @@ import com.shikbeTumio.vehicle.api.vehiclesearch.exception.TrimTypeNotFoundExcep
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.ModelTrimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ModelTrimServiceImpl implements ModelTrimService {
     @Autowired
     private ModelDao modelDAO;
@@ -79,4 +81,11 @@ public class ModelTrimServiceImpl implements ModelTrimService {
         }
         return detailsOfTrimType;
     }
+
+    @Override
+    public void deleteModelById(int id) throws ModelNotFoundException {
+        Model modelID = getModelById(id);
+        modelDAO.deleteById(id);
+    }
+
 }
