@@ -1,9 +1,12 @@
 package com.shikbeTumio.vehicle.api.vehiclesearch.service.impl;
 
+import com.shikbeTumio.vehicle.api.vehiclesearch.dao.ManufacturerDAO;
 import com.shikbeTumio.vehicle.api.vehiclesearch.dao.ModelDao;
 import com.shikbeTumio.vehicle.api.vehiclesearch.dao.TrimTypeDao;
+import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Manufacturer;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Model;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.TrimType;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ManufacturerNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ModelNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.TrimTypeNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.ModelTrimService;
@@ -22,6 +25,8 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     private ModelDao modelDAO;
     @Autowired
     private TrimTypeDao trimTypeDAO;
+    @Autowired
+    private ManufacturerDAO manufacturerDAO;
 
     @Override
     public Model saveModel(Model model) {
@@ -86,6 +91,17 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     public void deleteModelById(int id) throws ModelNotFoundException {
         Model modelID = getModelById(id);
         modelDAO.deleteById(id);
+    }
+
+    @Override
+    public List<Model> getModelsByManufacturerId(int manufacturerId) throws ManufacturerNotFoundException {
+        Optional<Manufacturer> manufacturerIdFromDB = manufacturerDAO.findById(manufacturerId);
+        if (!manufacturerIdFromDB.isPresent()) {
+            throw new ManufacturerNotFoundException("Manufacturer is not found for the id " + manufacturerId);
+        }
+        Manufacturer detailsOfManufacturer = manufacturerIdFromDB.get();
+        List<Model> modelList = modelDAO.findByManufacturer(detailsOfManufacturer);
+        return modelList;
     }
 
 }
