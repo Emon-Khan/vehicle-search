@@ -2,6 +2,7 @@ package com.shikbeTumio.vehicle.api.vehiclesearch.controller;
 
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Model;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.TrimType;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ManufacturerNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ModelNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.TrimTypeNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.ModelTrimService;
@@ -55,5 +56,14 @@ public class ModelTrimController {
     public ResponseEntity<String> deleteModel(@PathVariable int id) throws ModelNotFoundException {
         modelTrimService.deleteModelById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Deleted model of ID "+id);
+    }
+    @GetMapping("/manufacturer/{manufacturerId}")
+    public ResponseEntity<List<Model>> findAllModelsForManufacturer(@PathVariable int manufacturerId) throws ManufacturerNotFoundException, ModelNotFoundException {
+        List<Model> allModels = modelTrimService.getModelsByManufacturerId(manufacturerId);
+        if(allModels.size()>0){
+            return new ResponseEntity<>(allModels, HttpStatus.OK);
+        }else{
+            throw new ModelNotFoundException("No model found for this manufacturer id "+manufacturerId);
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.shikbeTumio.vehicle.api.vehiclesearch.service;
 
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Model;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.TrimType;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ManufacturerNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ModelNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.TrimTypeNotFoundException;
 
@@ -20,4 +21,5 @@ public interface ModelTrimService {
 
     TrimType modifyTrimType(int id, TrimType trimType) throws TrimTypeNotFoundException;
     void deleteModelById(int id) throws ModelNotFoundException;
+    List<Model> getModelsByManufacturerId(int manufacturerId) throws ManufacturerNotFoundException;
 }
