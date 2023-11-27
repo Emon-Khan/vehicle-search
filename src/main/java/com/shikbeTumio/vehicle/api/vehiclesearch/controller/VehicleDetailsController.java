@@ -19,7 +19,7 @@ public class VehicleDetailsController {
     private VehicleDetailService vehicleDetailService;
 
     @GetMapping
-    ResponseEntity<List<ClientVehicleDetail>> getAllVehicleDetails() {
+    public ResponseEntity<List<ClientVehicleDetail>> getAllVehicleDetails() {
         List<ClientVehicleDetail> dbVehicles = vehicleDetailService.getAllVehicleDetails();
         return new ResponseEntity<>(dbVehicles, HttpStatus.OK);
     }

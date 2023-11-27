@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VehicleMarketPriceImpl implements VehicleMarketPriceService {
+public class VehicleMarketPriceServiceImpl implements VehicleMarketPriceService {
     @Autowired
     VehicleMarketPriceDAO vehicleMarketPriceDAO;
     @Override
