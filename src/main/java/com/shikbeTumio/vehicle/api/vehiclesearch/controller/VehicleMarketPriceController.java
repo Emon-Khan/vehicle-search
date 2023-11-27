@@ -1,6 +1,7 @@
 package com.shikbeTumio.vehicle.api.vehiclesearch.controller;
 
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.VehicleMarketPrice;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.VehicleMarketPriceNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.VehicleMarketPriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class VehicleMarketPriceController {
     private VehicleMarketPriceService vehicleMarketPriceService;
 
     @PostMapping
-    public ResponseEntity<VehicleMarketPrice> saveVehicleMarketPrice(@RequestBody VehicleMarketPrice vehicleMarketPrice) {
+    public ResponseEntity<VehicleMarketPrice> saveVehicleMarketPrice(@RequestBody VehicleMarketPrice vehicleMarketPrice) throws VehicleMarketPriceNotFoundException {
         VehicleMarketPrice saveVehicleMarketPrice = vehicleMarketPriceService.saveVehicleMarketPrice(vehicleMarketPrice);
         return new ResponseEntity<>(saveVehicleMarketPrice, HttpStatus.CREATED);
     }

@@ -4,6 +4,7 @@ import com.shikbeTumio.vehicle.api.vehiclesearch.dto.ClientVehicleDetail;
 import com.shikbeTumio.vehicle.api.vehiclesearch.dto.VehicleDetails;
 import com.shikbeTumio.vehicle.api.vehiclesearch.dto.VehicleDetailsDTO;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.VehicleMarketPrice;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.VehicleMarketPriceNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.VehicleDetailService;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.VehicleMarketPriceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,17 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
             clientVehicleDetailsList.add(mapClientVehicleDetailFromVehicleDetail(vehicleDetails));
         }*/
         List<ClientVehicleDetail> clientVehicleDetailsList = vehicleDetailsDTO.getVehicleDetailsList().stream()
-                .map(vehicle -> mapClientVehicleDetailFromVehicleDetail(vehicle)).collect(Collectors.toList());
+                .map(vehicle -> {
+                    try {
+                        return mapClientVehicleDetailFromVehicleDetail(vehicle);
+                    } catch (VehicleMarketPriceNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).collect(Collectors.toList());
         return clientVehicleDetailsList;
     }
 
-    private ClientVehicleDetail mapClientVehicleDetailFromVehicleDetail(VehicleDetails vehicleDetails) {
+    private ClientVehicleDetail mapClientVehicleDetailFromVehicleDetail(VehicleDetails vehicleDetails) throws VehicleMarketPriceNotFoundException {
         ClientVehicleDetail clientVehicleDetail = new ClientVehicleDetail();
         clientVehicleDetail.setId(vehicleDetails.getId());
         clientVehicleDetail.setModelYear(vehicleDetails.getModelYear());
@@ -58,6 +65,9 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         //Market Price (New Vehicle) - (Current year -model year)*market price * 0.5/25-current miles*market price*75/500000
         VehicleMarketPrice dbMarketPriceBasedOnBrandAndModel = vehicleMarketPriceService
                 .getVehicleMarketPriceByBrandModel(vehicleDetails.getBrandName(), vehicleDetails.getModelName());
+        if(dbMarketPriceBasedOnBrandAndModel==null){
+            throw new VehicleMarketPriceNotFoundException("Vehicle Market Price not found for this BrandName & ModelName "+vehicleDetails.getBrandName()+" & "+vehicleDetails.getModelName());
+        }
         double currentVehicleMarketPrice = dbMarketPriceBasedOnBrandAndModel.getPrice()
                 - (LocalDate.now().getYear() - vehicleDetails.getModelYear())
                 * (dbMarketPriceBasedOnBrandAndModel.getPrice() * 0.5 / 25) - (vehicleDetails.getMilesOnVehicle()

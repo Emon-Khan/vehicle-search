@@ -34,4 +34,10 @@ public class VehicleSearchApiExceptions {
         ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(VehicleMarketPriceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleVehicleMarketPriceNotFound(VehicleMarketPriceNotFoundException ex){
+        ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }
