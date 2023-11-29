@@ -45,7 +45,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         clientVehicleDetail.setId(vehicleDetails.getId());
         clientVehicleDetail.setModelYear(vehicleDetails.getModelYear());
         clientVehicleDetail.setBrandName(vehicleDetails.getBrandName());
-        clientVehicleDetail.setModelName(vehicleDetails.getTrimType());
+        clientVehicleDetail.setModelName(vehicleDetails.getModelName());
         clientVehicleDetail.setTrimType(vehicleDetails.getTrimType());
         clientVehicleDetail.setBodyType(vehicleDetails.getBodyType());
         clientVehicleDetail.setVehiclePrice(vehicleDetails.getVehiclePrice());

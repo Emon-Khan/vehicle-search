@@ -18,6 +18,7 @@ public class VehicleDetailsController {
     @Autowired
     private VehicleDetailService vehicleDetailService;
 
+
     @GetMapping
     public ResponseEntity<List<ClientVehicleDetail>> getAllVehicleDetails() {
         List<ClientVehicleDetail> dbVehicles = vehicleDetailService.getAllVehicleDetails();

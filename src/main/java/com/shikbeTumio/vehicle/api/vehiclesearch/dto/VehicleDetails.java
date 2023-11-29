@@ -28,5 +28,4 @@ public class VehicleDetails {
     private String locationOfVehicle;
     private String sellerName;
     private String sellerContactNumber;
-
 }
