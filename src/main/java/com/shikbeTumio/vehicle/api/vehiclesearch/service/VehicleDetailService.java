@@ -7,5 +7,5 @@ import com.shikbeTumio.vehicle.api.vehiclesearch.dto.VehicleDetailsDTO;
 import java.util.List;
 
 public interface VehicleDetailService {
-    List<ClientVehicleDetail> getAllVehicleDetails();
+    List<ClientVehicleDetail> getAllClientVehicleDetails();
 }

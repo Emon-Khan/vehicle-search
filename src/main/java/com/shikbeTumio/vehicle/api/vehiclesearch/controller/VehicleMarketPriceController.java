@@ -18,7 +18,7 @@ public class VehicleMarketPriceController {
     private VehicleMarketPriceService vehicleMarketPriceService;
 
     @PostMapping
-    public ResponseEntity<VehicleMarketPrice> saveVehicleMarketPrice(@RequestBody VehicleMarketPrice vehicleMarketPrice) throws VehicleMarketPriceNotFoundException {
+    public ResponseEntity<VehicleMarketPrice> saveVehicleMarketPrice(@RequestBody VehicleMarketPrice vehicleMarketPrice) {
         VehicleMarketPrice saveVehicleMarketPrice = vehicleMarketPriceService.saveVehicleMarketPrice(vehicleMarketPrice);
         return new ResponseEntity<>(saveVehicleMarketPrice, HttpStatus.CREATED);
     }

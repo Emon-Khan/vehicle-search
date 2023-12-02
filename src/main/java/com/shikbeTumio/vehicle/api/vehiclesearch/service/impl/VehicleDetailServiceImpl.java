@@ -23,7 +23,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
     public VehicleMarketPriceService vehicleMarketPriceService;
 
     @Override
-    public List<ClientVehicleDetail> getAllVehicleDetails() {
+    public List<ClientVehicleDetail> getAllClientVehicleDetails() {
         VehicleDetailsDTO vehicleDetailsDTO = restTemplate.getForObject("http://localhost:9192/api/v1/vehicle-details", VehicleDetailsDTO.class);
         /*List<ClientVehicleDetail> clientVehicleDetailsList = new ArrayList<>();
         for (VehicleDetails vehicleDetails : vehicleDetailsDTO.getVehicleDetailsList()) {
@@ -45,7 +45,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         clientVehicleDetail.setId(vehicleDetails.getId());
         clientVehicleDetail.setModelYear(vehicleDetails.getModelYear());
         clientVehicleDetail.setBrandName(vehicleDetails.getBrandName());
-        clientVehicleDetail.setModelName(vehicleDetails.getTrimType());
+        clientVehicleDetail.setModelName(vehicleDetails.getModelName());
         clientVehicleDetail.setTrimType(vehicleDetails.getTrimType());
         clientVehicleDetail.setBodyType(vehicleDetails.getBodyType());
         clientVehicleDetail.setVehiclePrice(vehicleDetails.getVehiclePrice());

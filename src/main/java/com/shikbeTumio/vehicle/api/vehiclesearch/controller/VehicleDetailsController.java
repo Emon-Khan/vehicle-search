@@ -19,8 +19,8 @@ public class VehicleDetailsController {
     private VehicleDetailService vehicleDetailService;
 
     @GetMapping
-    public ResponseEntity<List<ClientVehicleDetail>> getAllVehicleDetails() {
-        List<ClientVehicleDetail> dbVehicles = vehicleDetailService.getAllVehicleDetails();
+    public ResponseEntity<List<ClientVehicleDetail>> getAllClientVehicleDetailsController() {
+        List<ClientVehicleDetail> dbVehicles = vehicleDetailService.getAllClientVehicleDetails();
         return new ResponseEntity<>(dbVehicles, HttpStatus.OK);
     }
 }
