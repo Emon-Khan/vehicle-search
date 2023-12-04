@@ -28,15 +28,24 @@ public class VehicleSearchApiExceptions {
         ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(TrimTypeNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTrimTypeNotFound(TrimTypeNotFoundException ex){
+    public ResponseEntity<ErrorResponse> handleTrimTypeNotFound(TrimTypeNotFoundException ex) {
         ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(VehicleMarketPriceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleVehicleMarketPriceNotFound(VehicleMarketPriceNotFoundException ex){
+    public ResponseEntity<ErrorResponse> handleVehicleMarketPriceNotFound(VehicleMarketPriceNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(VehicleDetailsNotFound.class)
+    public ResponseEntity<ErrorResponse> handleVehicleDetailsNotFound(VehicleDetailsNotFound ex) {
         ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
