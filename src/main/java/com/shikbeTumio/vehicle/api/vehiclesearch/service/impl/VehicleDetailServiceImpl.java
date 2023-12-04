@@ -4,6 +4,7 @@ import com.shikbeTumio.vehicle.api.vehiclesearch.dto.ClientVehicleDetail;
 import com.shikbeTumio.vehicle.api.vehiclesearch.dto.VehicleDetails;
 import com.shikbeTumio.vehicle.api.vehiclesearch.dto.VehicleDetailsDTO;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.VehicleMarketPrice;
+import com.shikbeTumio.vehicle.api.vehiclesearch.exception.VehicleDetailsNotFound;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.VehicleMarketPriceNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.VehicleDetailService;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.VehicleMarketPriceService;
@@ -65,8 +66,8 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         //Market Price (New Vehicle) - (Current year -model year)*market price * 0.5/25-current miles*market price*75/500000
         VehicleMarketPrice dbMarketPriceBasedOnBrandAndModel = vehicleMarketPriceService
                 .getVehicleMarketPriceByBrandModel(vehicleDetails.getBrandName(), vehicleDetails.getModelName());
-        if(dbMarketPriceBasedOnBrandAndModel==null){
-            throw new VehicleMarketPriceNotFoundException("Vehicle Market Price not found for this BrandName & ModelName "+vehicleDetails.getBrandName()+" & "+vehicleDetails.getModelName());
+        if (dbMarketPriceBasedOnBrandAndModel == null) {
+            throw new VehicleMarketPriceNotFoundException("Vehicle Market Price not found for this BrandName & ModelName " + vehicleDetails.getBrandName() + " & " + vehicleDetails.getModelName());
         }
         double currentVehicleMarketPrice = dbMarketPriceBasedOnBrandAndModel.getPrice()
                 - (LocalDate.now().getYear() - vehicleDetails.getModelYear())
@@ -92,5 +93,15 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
             clientVehicleDetail.setDealType("Bad Deal");
         }
         return clientVehicleDetail;
+    }
+    @Override
+    public VehicleDetails getVehicleById(int vehicleId) throws VehicleDetailsNotFound {
+        VehicleDetails dbVehicle = null;
+        try{
+            dbVehicle = restTemplate.getForObject("http://localhost:9192/api/v1/vehicle-details/" + vehicleId, VehicleDetails.class);
+        }catch (Exception ex){
+            throw new VehicleDetailsNotFound("No Vehicle is found with this id "+vehicleId);
+        }
+        return dbVehicle;
     }
 }
