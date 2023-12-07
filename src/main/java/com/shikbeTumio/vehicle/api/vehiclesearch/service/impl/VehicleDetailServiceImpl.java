@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +41,36 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
                     }
                 }).collect(Collectors.toList());
         return clientVehicleDetailsList;
+    }
+
+    @Override
+    public VehicleDetails getVehicleById(int vehicleId) throws VehicleDetailsNotFound {
+        VehicleDetails dbVehicle = null;
+        try {
+            dbVehicle = restTemplate.getForObject("http://localhost:9192/api/v1/vehicle-details/" + vehicleId, VehicleDetails.class);
+        } catch (Exception ex) {
+            throw new VehicleDetailsNotFound("No Vehicle is found with this id " + vehicleId);
+        }
+        return dbVehicle;
+    }
+
+    @Override
+    public List<ClientVehicleDetail> fetchVehicleDetailsByCriteria(String modelYear, String brand, String model, String trim, String price) {
+        Map<String, String> params = new HashMap<>();
+        params.put("modelYear", modelYear);
+        params.put("brand", brand);
+        params.put("model",model);
+        params.put("trim",trim);
+        params.put("price", price);
+        String url = "http://localhost:9192/api/v1/vehicle-details/search?modelYear={modelYear}&brand={brand}&model={model}&trim={trim}&price={price}";
+        VehicleDetailsDTO filteredList = restTemplate.getForObject(url, VehicleDetailsDTO.class, params);
+        return filteredList.getVehicleDetailsList().stream().map(vehicleDetails -> {
+            try {
+                return mapClientVehicleDetailFromVehicleDetail(vehicleDetails);
+            } catch (VehicleMarketPriceNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
     }
 
     private ClientVehicleDetail mapClientVehicleDetailFromVehicleDetail(VehicleDetails vehicleDetails) throws VehicleMarketPriceNotFoundException {
@@ -93,15 +125,5 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
             clientVehicleDetail.setDealType("Bad Deal");
         }
         return clientVehicleDetail;
-    }
-    @Override
-    public VehicleDetails getVehicleById(int vehicleId) throws VehicleDetailsNotFound {
-        VehicleDetails dbVehicle = null;
-        try{
-            dbVehicle = restTemplate.getForObject("http://localhost:9192/api/v1/vehicle-details/" + vehicleId, VehicleDetails.class);
-        }catch (Exception ex){
-            throw new VehicleDetailsNotFound("No Vehicle is found with this id "+vehicleId);
-        }
-        return dbVehicle;
     }
 }
