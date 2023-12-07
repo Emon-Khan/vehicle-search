@@ -2,7 +2,6 @@ package com.shikbeTumio.vehicle.api.vehiclesearch.controller;
 
 import com.shikbeTumio.vehicle.api.vehiclesearch.dto.ClientVehicleDetail;
 import com.shikbeTumio.vehicle.api.vehiclesearch.dto.VehicleDetails;
-import com.shikbeTumio.vehicle.api.vehiclesearch.dto.VehicleDetailsDTO;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.VehicleDetailsNotFound;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.VehicleDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
