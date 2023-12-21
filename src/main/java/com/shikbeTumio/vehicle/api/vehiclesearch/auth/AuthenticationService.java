@@ -3,6 +3,7 @@ package com.shikbeTumio.vehicle.api.vehiclesearch.auth;
 import com.shikbeTumio.vehicle.api.vehiclesearch.config.JwtService;
 import com.shikbeTumio.vehicle.api.vehiclesearch.dao.UserDAO;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Account;
+import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Roles;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +23,7 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .enabled(request.isEnabled())
-                .roles(request.getRoles())
+                .roles(Roles.valueOf(request.getRoles()))
                 .build();
         userDAO.save(account);
         var jwtToken = jwtService.generateToken(account);

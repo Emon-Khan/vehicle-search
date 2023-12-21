@@ -7,6 +7,7 @@ import com.shikbeTumio.vehicle.api.vehiclesearch.service.VehicleDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,17 +19,20 @@ public class VehicleDetailsController {
     private VehicleDetailService vehicleDetailService;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<ClientVehicleDetail>> getAllClientVehicleDetailsController() {
         List<ClientVehicleDetail> dbVehicles = vehicleDetailService.getAllClientVehicleDetails();
         return new ResponseEntity<>(dbVehicles, HttpStatus.OK);
     }
 
     @GetMapping("/{vehicleId}")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<VehicleDetails> getVehicleById(@PathVariable int vehicleId) throws VehicleDetailsNotFound {
         return new ResponseEntity<>(vehicleDetailService.getVehicleById(vehicleId), HttpStatus.OK);
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<ClientVehicleDetail>> searchVehicleByFilterCriteria(@RequestParam String modelYear, @RequestParam String brand, @RequestParam String model, @RequestParam String trim, @RequestParam String price) {
         List<ClientVehicleDetail> filteredClientVehicleDetailsList = vehicleDetailService.fetchVehicleDetailsByCriteria(modelYear, brand, model, trim, price);
         return new ResponseEntity<>(filteredClientVehicleDetailsList, HttpStatus.OK);

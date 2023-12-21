@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class manufacturerController {
     private ManufacturerService manufacturerService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
     public ResponseEntity<Manufacturer> createManufacturerInDB(@Valid @RequestBody Manufacturer manufacturer, BindingResult result) throws MissingFieldException {
         if (result.hasErrors()) {
             List<ObjectError> error = result.getAllErrors();
@@ -31,12 +33,14 @@ public class manufacturerController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<Manufacturer>> getAllManufacturer() {
         List<Manufacturer> allTheManufacturers = manufacturerService.fetchAllManufacturers();
         return ResponseEntity.status(HttpStatus.OK).body(allTheManufacturers);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<Manufacturer> getManufacturerBasedOnId(@PathVariable int id) throws ManufacturerNotFoundException {
         Manufacturer manufacturerResultUsingId = manufacturerService.getManufacturerById(id);
         if (manufacturerResultUsingId == null) {
@@ -46,6 +50,7 @@ public class manufacturerController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('admin:update', 'user:update')")
     public ResponseEntity<Manufacturer> updateManufacturer(@PathVariable int id, @Valid @RequestBody Manufacturer manufacturer, BindingResult result) throws Exception {
         if (result.hasErrors()) {
             List<ObjectError> errors = result.getAllErrors();
@@ -61,6 +66,7 @@ public class manufacturerController {
         return new ResponseEntity<>(updatedManufacturer, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<String> deleteManufacturer(@PathVariable int id) throws ManufacturerNotFoundException {
         manufacturerService.deleteManufacturerByID(id);
         return new ResponseEntity<>("Manufacturer deleted with the id "+id, HttpStatus.OK);
