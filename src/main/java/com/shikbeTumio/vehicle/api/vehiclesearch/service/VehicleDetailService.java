@@ -10,6 +10,5 @@ import java.util.List;
 public interface VehicleDetailService {
     List<ClientVehicleDetail> getAllClientVehicleDetails();
     VehicleDetails getVehicleById(int vehicleId) throws VehicleDetailsNotFound;
-
     List<ClientVehicleDetail> fetchVehicleDetailsByCriteria(String modelYear, String brand, String model, String trim, String price);
 }
