@@ -9,6 +9,7 @@ import com.shikbeTumio.vehicle.api.vehiclesearch.entity.TrimType;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ManufacturerNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ModelNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.TrimTypeNotFoundException;
+import com.shikbeTumio.vehicle.api.vehiclesearch.service.ManufacturerService;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.ModelTrimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,8 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     private TrimTypeDao trimTypeDAO;
     @Autowired
     private ManufacturerDAO manufacturerDAO;
+    @Autowired
+    private ManufacturerService manufacturerService;
 
     @Override
     public Model saveModel(Model model) {
@@ -102,6 +105,30 @@ public class ModelTrimServiceImpl implements ModelTrimService {
         Manufacturer detailsOfManufacturer = manufacturerIdFromDB.get();
         List<Model> modelList = modelDAO.findByManufacturer(detailsOfManufacturer);
         return modelList;
+    }
+
+    @Override
+    public Model updateModel_Trim(int modelId, Model model)
+            throws ModelNotFoundException, TrimTypeNotFoundException {
+        Model modelDetails = getModelById(modelId);
+        List<TrimType> trimTypeDetailsList = model.getTrimTypeList();
+        Manufacturer manufacturerDetails = model.getManufacturer();
+        if (modelDetails != null) {
+            if (!"".equalsIgnoreCase(model.getModelName())) {
+                modelDetails.setModelName(model.getModelName());
+            }
+            for (TrimType trimType : trimTypeDetailsList) {
+                TrimType trimTypeDetails = getTrimTypeById(trimType.getId());
+                if (trimTypeDetails != null && !(modelDetails.getTrimTypeList().contains(trimType))) {
+                    modelDetails.getTrimTypeList().add(trimTypeDetails);
+                }
+            }
+            if (manufacturerService.getManufacturerById(manufacturerDetails.getId()) != null) {
+                modelDetails.setManufacturer(manufacturerDetails);
+            }
+            modelDetails = modelDAO.save(modelDetails);
+        }
+        return modelDetails;
     }
 
 }

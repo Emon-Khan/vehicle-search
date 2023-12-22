@@ -1,18 +1,15 @@
 package com.shikbeTumio.vehicle.api.vehiclesearch.controller;
 
-import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Manufacturer;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.Model;
 import com.shikbeTumio.vehicle.api.vehiclesearch.entity.TrimType;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ManufacturerNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.ModelNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.exception.TrimTypeNotFoundException;
 import com.shikbeTumio.vehicle.api.vehiclesearch.service.ModelTrimService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +25,16 @@ public class ModelTrimController {
     public ResponseEntity<Model> creatModelTrim(@RequestBody Model model) {
         Model saveRecord = modelTrimService.saveModel(model);
         return new ResponseEntity<>(saveRecord, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{modelId}")
+    @PreAuthorize("hasAnyAuthority('admin:update', 'user:update')")
+    public ResponseEntity<Model> updateModelTrim(
+            @PathVariable int modelId,
+            @RequestBody Model model)
+            throws ModelNotFoundException, TrimTypeNotFoundException {
+        Model updatedModelTrim = modelTrimService.updateModel_Trim(modelId, model);
+        return new ResponseEntity<>(updatedModelTrim, HttpStatus.OK);
     }
 
     @PostMapping("/trim-type")
@@ -48,7 +55,7 @@ public class ModelTrimController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/model/{id}")
     @PreAuthorize("hasAnyAuthority('admin:update', 'user:update')")
     public ResponseEntity<Model> updateModel(@PathVariable int id, @RequestBody Model model) throws ModelNotFoundException {
         Model updatedModel = modelTrimService.modifyModel(id, model);
@@ -61,20 +68,22 @@ public class ModelTrimController {
         TrimType updatedTrimType = modelTrimService.modifyTrimType(id, trimType);
         return new ResponseEntity<>(updatedTrimType, HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<String> deleteModel(@PathVariable int id) throws ModelNotFoundException {
         modelTrimService.deleteModelById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Deleted model of ID "+id);
+        return ResponseEntity.status(HttpStatus.OK).body("Deleted model of ID " + id);
     }
+
     @GetMapping("/manufacturer/{manufacturerId}")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<Model>> findAllModelsForManufacturer(@PathVariable int manufacturerId) throws ManufacturerNotFoundException, ModelNotFoundException {
         List<Model> allModels = modelTrimService.getModelsByManufacturerId(manufacturerId);
-        if(allModels.size()>0){
+        if (allModels.size() > 0) {
             return new ResponseEntity<>(allModels, HttpStatus.OK);
-        }else{
-            throw new ModelNotFoundException("No model found for this manufacturer id "+manufacturerId);
+        } else {
+            throw new ModelNotFoundException("No model found for this manufacturer id " + manufacturerId);
         }
     }
 }
