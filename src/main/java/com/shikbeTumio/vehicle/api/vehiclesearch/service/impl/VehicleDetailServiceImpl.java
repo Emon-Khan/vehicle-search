@@ -64,6 +64,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         params.put("price", price);
         String url = "http://localhost:9192/api/v1/vehicle-details/search?modelYear={modelYear}&brand={brand}&model={model}&trim={trim}&price={price}";
         VehicleDetailsDTO filteredList = restTemplate.getForObject(url, VehicleDetailsDTO.class, params);
+        //assert filteredList != null;
         return filteredList.getVehicleDetailsList().stream().map(vehicleDetails -> {
             try {
                 return mapClientVehicleDetailFromVehicleDetail(vehicleDetails);
