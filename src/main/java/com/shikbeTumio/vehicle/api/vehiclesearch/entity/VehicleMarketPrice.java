@@ -20,5 +20,6 @@ public class VehicleMarketPrice {
     private int modelYear;
     private String brandName;
     private String modelName;
+    private String trimType;
     private double price;
 }

@@ -114,7 +114,8 @@ public class ModelTrimServiceImpl implements ModelTrimService {
         List<TrimType> trimTypeDetailsList = model.getTrimTypeList();
         Manufacturer manufacturerDetails = model.getManufacturer();
         if (modelDetails != null) {
-            if (!"".equalsIgnoreCase(model.getModelName())) {
+            if ((!"".equalsIgnoreCase(model.getModelName())) &&
+                    !Objects.equals(modelDetails.getModelName(), model.getModelName())) {
                 modelDetails.setModelName(model.getModelName());
             }
             for (TrimType trimType : trimTypeDetailsList) {
@@ -123,7 +124,13 @@ public class ModelTrimServiceImpl implements ModelTrimService {
                     modelDetails.getTrimTypeList().add(trimTypeDetails);
                 }
             }
-            if (manufacturerService.getManufacturerById(manufacturerDetails.getId()) != null) {
+            for (int i = trimTypeDetailsList.size(); i < modelDetails.getTrimTypeList().size(); i++) {
+                if (trimTypeDetailsList.size() != modelDetails.getTrimTypeList().size()) {
+                    modelDetails.getTrimTypeList().remove(i);
+                }
+            }
+            if ((manufacturerService.getManufacturerById(manufacturerDetails.getId()) != null) &&
+                    !manufacturerDetails.equals(modelDetails.getManufacturer())) {
                 modelDetails.setManufacturer(manufacturerDetails);
             }
             modelDetails = modelDAO.save(modelDetails);
