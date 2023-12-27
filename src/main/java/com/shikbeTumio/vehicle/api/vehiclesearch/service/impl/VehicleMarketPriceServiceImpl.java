@@ -15,7 +15,7 @@ public class VehicleMarketPriceServiceImpl implements VehicleMarketPriceService 
         return vehicleMarketPriceDAO.save(vehicleMarketPrice);
     }
     @Override
-    public VehicleMarketPrice getVehicleMarketPriceByBrandModel(String brandName, String modelName) {
-        return vehicleMarketPriceDAO.findByBrandNameAndModelName(brandName, modelName);
+    public VehicleMarketPrice getVehicleMarketPriceByBrandAndModelAndTrimAndYear(String brandName, String modelName, String trimType, int modelYear) {
+        return vehicleMarketPriceDAO.findByBrandNameAndModelNameAndTrimTypeAndModelYear(brandName, modelName, trimType, modelYear);
     }
 }

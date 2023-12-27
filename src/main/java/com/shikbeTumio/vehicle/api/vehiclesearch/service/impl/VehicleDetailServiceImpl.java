@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,8 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
 
     @Override
     public List<ClientVehicleDetail> getAllClientVehicleDetails() {
-        VehicleDetailsDTO vehicleDetailsDTO = restTemplate.getForObject("http://localhost:9192/api/v1/vehicle-details", VehicleDetailsDTO.class);
+        VehicleDetailsDTO vehicleDetailsDTO = restTemplate.getForObject(
+                "http://localhost:9192/api/v1/vehicle-details", VehicleDetailsDTO.class);
         /*List<ClientVehicleDetail> clientVehicleDetailsList = new ArrayList<>();
         for (VehicleDetails vehicleDetails : vehicleDetailsDTO.getVehicleDetailsList()) {
             clientVehicleDetailsList.add(mapClientVehicleDetailFromVehicleDetail(vehicleDetails));
@@ -59,8 +61,8 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         Map<String, String> params = new HashMap<>();
         params.put("modelYear", modelYear);
         params.put("brand", brand);
-        params.put("model",model);
-        params.put("trim",trim);
+        params.put("model", model);
+        params.put("trim", trim);
         params.put("price", price);
         String url = "http://localhost:9192/api/v1/vehicle-details/search?modelYear={modelYear}&brand={brand}&model={model}&trim={trim}&price={price}";
         VehicleDetailsDTO filteredList = restTemplate.getForObject(url, VehicleDetailsDTO.class, params);
@@ -74,7 +76,8 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         }).collect(Collectors.toList());
     }
 
-    private ClientVehicleDetail mapClientVehicleDetailFromVehicleDetail(VehicleDetails vehicleDetails) throws VehicleMarketPriceNotFoundException {
+    private ClientVehicleDetail mapClientVehicleDetailFromVehicleDetail(VehicleDetails vehicleDetails)
+            throws VehicleMarketPriceNotFoundException {
         ClientVehicleDetail clientVehicleDetail = new ClientVehicleDetail();
         clientVehicleDetail.setId(vehicleDetails.getId());
         clientVehicleDetail.setModelYear(vehicleDetails.getModelYear());
@@ -91,40 +94,54 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         //calculated estimated monthly price
         //price/(5*12) + price*interest_rate/(100*12) Because interest
         // rate has been given for a year and here 5 is indication years
-        double monthlyPrice = vehicleDetails.getVehiclePrice() / (5 * 12) + vehicleDetails.getVehiclePrice() * vehicleDetails.getInterestRate() / (100 * 12);
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        Double monthlyPrice = monthlyPriceCalculation(vehicleDetails);
+        Double totalAmmountToBePaid = monthlyPrice*10*12;
+        /*double monthlyPrice = vehicleDetails.getVehiclePrice() / (5 * 12) +
+                vehicleDetails.getVehiclePrice() * vehicleDetails.getInterestRate() / (100 * 12);*/
         //$577.31/monthly est.
-        clientVehicleDetail.setEstimatedMonthlyPrice("$" + monthlyPrice + "/monthly est.");
+        clientVehicleDetail.setEstimatedMonthlyPrice("$" + decimalFormat.format(monthlyPrice) + "/monthly est.");
         //Calculate amount below or above market price
         //Calculate current market price
         //Market Price (New Vehicle) - (Current year -model year)*market price * 0.5/25-current miles*market price*75/500000
-        VehicleMarketPrice dbMarketPriceBasedOnBrandAndModel = vehicleMarketPriceService
-                .getVehicleMarketPriceByBrandModel(vehicleDetails.getBrandName(), vehicleDetails.getModelName());
-        if (dbMarketPriceBasedOnBrandAndModel == null) {
-            throw new VehicleMarketPriceNotFoundException("Vehicle Market Price not found for this BrandName & ModelName " + vehicleDetails.getBrandName() + " & " + vehicleDetails.getModelName());
+        VehicleMarketPrice dbMarketPriceBasedOnBrandAndModelAndTrimAndYear = vehicleMarketPriceService
+                .getVehicleMarketPriceByBrandAndModelAndTrimAndYear(vehicleDetails.getBrandName(), vehicleDetails.getModelName(), vehicleDetails.getTrimType(), vehicleDetails.getModelYear());
+        if (dbMarketPriceBasedOnBrandAndModelAndTrimAndYear == null) {
+            throw new VehicleMarketPriceNotFoundException("Vehicle Market Price not found for this BrandName, ModelName, TrimType & Year" +
+                    vehicleDetails.getBrandName() + " & " + vehicleDetails.getModelName()+ " & "+vehicleDetails.getTrimType()+ " & "+vehicleDetails.getModelYear());
         }
-        double currentVehicleMarketPrice = dbMarketPriceBasedOnBrandAndModel.getPrice()
+        /*double currentVehicleMarketPrice = dbMarketPriceBasedOnBrandAndModelAndTrimAndYear.getPrice()
                 - (LocalDate.now().getYear() - vehicleDetails.getModelYear())
-                * (dbMarketPriceBasedOnBrandAndModel.getPrice() * 0.5 / 25) - (vehicleDetails.getMilesOnVehicle()
-                * dbMarketPriceBasedOnBrandAndModel.getPrice() * 0.75 / 500000);
-        if (currentVehicleMarketPrice < 0) {
+                * (dbMarketPriceBasedOnBrandAndModelAndTrimAndYear.getPrice() * 0.5 / 25) - (vehicleDetails.getMilesOnVehicle()
+                * dbMarketPriceBasedOnBrandAndModelAndTrimAndYear.getPrice() * 0.75 / 500000);*/
+        double currentVehicleMarketPrice = dbMarketPriceBasedOnBrandAndModelAndTrimAndYear.getPrice();
+        /*if (currentVehicleMarketPrice < 0) {
             currentVehicleMarketPrice = 0;
-        }
-        double marketPriceComparison = currentVehicleMarketPrice - vehicleDetails.getVehiclePrice();
+        }*/
+        double marketPriceComparison = currentVehicleMarketPrice - totalAmmountToBePaid;
         if (marketPriceComparison > 0) {
             clientVehicleDetail.setAmountBelowMarketPrice("$" + marketPriceComparison + " below market price.");
         } else {
             clientVehicleDetail.setAmountBelowMarketPrice("$" + Math.abs(marketPriceComparison) + " above market price.");
         }
         //deal type determination
-        if (marketPriceComparison > 800) {
+        if (marketPriceComparison > 8000) {
             clientVehicleDetail.setDealType("Great Deal");
-        } else if (marketPriceComparison > 350 && marketPriceComparison <= 800) {
+        } else if (marketPriceComparison > 6000 && marketPriceComparison <= 8000) {
             clientVehicleDetail.setDealType("Good Deal");
-        } else if (marketPriceComparison > 100 && marketPriceComparison <= 350) {
+        } else if (marketPriceComparison > 3000 && marketPriceComparison <= 6000) {
             clientVehicleDetail.setDealType("Fair Deal");
         } else {
             clientVehicleDetail.setDealType("Bad Deal");
         }
         return clientVehicleDetail;
     }
+    private Double monthlyPriceCalculation(VehicleDetails vehicleDetails){
+        double interestRateMonthly = vehicleDetails.getInterestRate()/(12*100);
+        double numberOfMonth = 10*12;
+        double calculation1 = Math.pow((1.0+interestRateMonthly), numberOfMonth);
+        double monthlyPrice = (vehicleDetails.getVehiclePrice()*interestRateMonthly*calculation1)/(calculation1-1);
+        return monthlyPrice;
+    }
+
 }
