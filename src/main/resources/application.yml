@@ -1,0 +1,25 @@
+#eureka:
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    serviceUrl:
+#      defaultZone: http://localhost:8761/eureka
+#  instance:
+#    hostname: localhost
+server:
+  port: 9191
+spring:
+  application:
+    name: VEHICLE-SEARCH-API
+  datasource:
+    password: springboot
+    url: jdbc:mysql://localhost:3306/vehicle
+    username: springboot
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  config:
+    import: optional:configserver:http://localhost:9194

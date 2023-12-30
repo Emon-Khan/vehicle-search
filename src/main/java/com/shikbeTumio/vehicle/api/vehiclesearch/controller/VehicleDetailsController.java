@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/vehicle-details")
+@RequestMapping("/api/v1/vehicle-search/vehicle-details")
 public class VehicleDetailsController {
     @Autowired
     private VehicleDetailService vehicleDetailService;

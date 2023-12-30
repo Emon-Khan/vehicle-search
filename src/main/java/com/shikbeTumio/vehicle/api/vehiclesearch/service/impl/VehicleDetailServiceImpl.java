@@ -29,7 +29,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
     @Override
     public List<ClientVehicleDetail> getAllClientVehicleDetails() {
         VehicleDetailsDTO vehicleDetailsDTO = restTemplate.getForObject(
-                "http://localhost:9192/api/v1/vehicle-details", VehicleDetailsDTO.class);
+                "http://VEHICLE-DETAILS-API/api/v1/vehicle-details", VehicleDetailsDTO.class);
         /*List<ClientVehicleDetail> clientVehicleDetailsList = new ArrayList<>();
         for (VehicleDetails vehicleDetails : vehicleDetailsDTO.getVehicleDetailsList()) {
             clientVehicleDetailsList.add(mapClientVehicleDetailFromVehicleDetail(vehicleDetails));
@@ -49,7 +49,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
     public VehicleDetails getVehicleById(int vehicleId) throws VehicleDetailsNotFound {
         VehicleDetails dbVehicle = null;
         try {
-            dbVehicle = restTemplate.getForObject("http://localhost:9192/api/v1/vehicle-details/" + vehicleId, VehicleDetails.class);
+            dbVehicle = restTemplate.getForObject("http://VEHICLE-DETAILS-API/api/v1/vehicle-details/" + vehicleId, VehicleDetails.class);
         } catch (Exception ex) {
             throw new VehicleDetailsNotFound("No Vehicle is found with this id " + vehicleId);
         }
@@ -64,7 +64,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         params.put("model", model);
         params.put("trim", trim);
         params.put("price", price);
-        String url = "http://localhost:9192/api/v1/vehicle-details/search?modelYear={modelYear}&brand={brand}&model={model}&trim={trim}&price={price}";
+        String url = "http://VEHICLE-DETAILS-API/api/v1/vehicle-details/search?modelYear={modelYear}&brand={brand}&model={model}&trim={trim}&price={price}";
         VehicleDetailsDTO filteredList = restTemplate.getForObject(url, VehicleDetailsDTO.class, params);
         //assert filteredList != null;
         return filteredList.getVehicleDetailsList().stream().map(vehicleDetails -> {
@@ -90,6 +90,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         clientVehicleDetail.setLocationOfVehicle(vehicleDetails.getLocationOfVehicle());
         clientVehicleDetail.setSellerName(vehicleDetails.getSellerName());
         clientVehicleDetail.setSellerContactNumber(vehicleDetails.getSellerContactNumber());
+        clientVehicleDetail.setInterestRate(vehicleDetails.getInterestRate());
 
         //calculated estimated monthly price
         //price/(5*12) + price*interest_rate/(100*12) Because interest
