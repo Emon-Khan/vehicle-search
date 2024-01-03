@@ -30,7 +30,7 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/api/v1/auth/**")
+                        .requestMatchers("/api/v1/vehicle-search/auth/**")
                         .permitAll()
                         /*.requestMatchers("/api/v1/manufacturers/**").hasAnyRole(ADMIN.name(), USER.name())
 
